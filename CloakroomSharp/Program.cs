@@ -1,11 +1,17 @@
-﻿using CloakroomSharp;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-class Program
+namespace CloakroomSharp
 {
-	static int Main()
+	internal class Program
 	{
-		Application application = new Application();
-		application.Run();
-		return 0;
+		static void Main(string[] args)
+		{
+			Application application = new Application();
+			application.Run();
+		}
 	}
 }

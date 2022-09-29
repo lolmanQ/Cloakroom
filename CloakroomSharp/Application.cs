@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.IO.Compression;
 
 namespace CloakroomSharp
 {
@@ -11,6 +9,8 @@ namespace CloakroomSharp
 	{
 		public void Run()
 		{
+			bool hasFailed = false;
+
 			string assignmentHeader;
 			string assignmentCodeName = "";
 
@@ -25,7 +25,7 @@ namespace CloakroomSharp
 				string[] filesInTop = Directory.GetFiles(".");
 				foreach (string item in filesInTop)
 				{
-					if(Path.GetExtension(item) == ".sln")
+					if (Path.GetExtension(item) == ".sln")
 					{
 						assignmentCodeName = Path.GetFileNameWithoutExtension(item);
 						projectNamesFound++;
@@ -34,109 +34,72 @@ namespace CloakroomSharp
 			}
 			catch (Exception)
 			{
-
-				
+				Console.WriteLine("sln search crashed");
+				hasFailed = true;
 			}
 
 			if (projectNamesFound == 0 || projectNamesFound > 1)
 			{
 				Console.WriteLine("No or multiple projects found. Aborting.");
+				Console.WriteLine("Failed to copy code files");
 				return;
 			}
+
+			Directory.CreateDirectory(assignmentHeader);
 
 			try
 			{
 				Directory.CreateDirectory(assignmentHeader + "/Exe");
-				File.Copy("/x64/Release/" + assignmentCodeName + ".exe", "/" + assignmentHeader + "/Exe/" + assignmentCodeName + ".exe", true);
+				File.Copy("x64/Release/" + assignmentCodeName + ".exe", assignmentHeader + "/Exe/" + assignmentCodeName + ".exe", true);
 			}
 			catch (Exception)
 			{
-
+				Console.WriteLine("Missing 64 bit release build");
+				hasFailed = true;
 			}
 
 			try
 			{
 				Directory.CreateDirectory(assignmentHeader + "/Source");
 				File.Copy(assignmentCodeName + ".sln", assignmentHeader + "/Source/" + assignmentCodeName + ".sln");
+				
 				var allFiles = Directory.GetFiles(assignmentCodeName + "/");
-
-				foreach (string newPath in allFiles)
+				Directory.CreateDirectory(assignmentHeader + "/Source/" + assignmentCodeName);
+				foreach (string sourcePath in allFiles)
 				{
-					File.Copy(newPath, newPath.Replace("/" + assignmentCodeName + "/", "/" + assignmentHeader + "/Source/" + assignmentCodeName + "/"), true);
+					string newPath = sourcePath.Replace(assignmentCodeName + "/", assignmentHeader + "/Source/" + assignmentCodeName + "/");
+					File.Copy(sourcePath, newPath, true);
 				}
 			}
 			catch (Exception)
 			{
-
+				Console.WriteLine("Failed to copy code files");
+				hasFailed = true;
 			}
 
-			Console.ReadLine();
+			if (hasFailed)
+			{
+				Console.WriteLine("Press enter to continue");
+				Console.ReadLine();
+				return;
+			}
 
-	//		try
-	//		{
-	//			for (auto const&entry : fs::directory_iterator("."))
-	//				{
-	//				if (fs::is_regular_file(entry) && entry.path().extension() == ".sln")
-	//				{
-	//					assignmentCodeName = entry.path().stem().string();
-	//					projectNamesFound++;
-	//				}
-	//			}
-	//		}
-	//		catch (const std::exception&)
-	//{
-	//			std::cout << "sln search crashed\n";
-	//			system("pause");
-	//			return 0;
-	//		}
+			bool zipFailed = false;
 
-				//		if (projectNamesFound == 0 || projectNamesFound > 1)
-				//		{
-				//			std::cout << "No or multiple projects found. Aborting.\n";
-				//			system("pause");
-				//			return 0;
-				//		}
+			try
+			{
+				ZipFile.CreateFromDirectory(assignmentHeader, assignmentHeader + ".zip");
+			}
+			catch (Exception)
+			{
+				Console.WriteLine("Failed to zip task");
+				zipFailed = true;
+			}
 
-				//		std::cout << "Found project: " << assignmentCodeName << "\n";
-				//		//std::cout << "Enter project name:\n";
-				//		//std::getline(std::cin, assignmentCodeName);
-
-				//		const auto copyOptions = fs::copy_options::update_existing;
-
-				//		fs::create_directories(assignmentHeader + "/Exe");
-
-				//		try
-				//		{
-				//			fs::copy_file("x64/Release/" + assignmentCodeName + ".exe", assignmentHeader + "/Exe/" + assignmentCodeName + ".exe", copyOptions);
-				//		}
-				//		catch (const std::exception&)
-				//{
-				//			std::cout << "Missing 64 bit release build\n";
-				//		}
-
-				//		fs::create_directories(assignmentHeader + "/Source");
-
-				//		try
-				//		{
-				//			fs::copy_file(assignmentCodeName + ".sln", assignmentHeader + "/Source/" + assignmentCodeName + ".sln", copyOptions);
-				//		}
-				//		catch (const std::exception&)
-				//{
-				//			std::cout << "Failed to copy sln\n";
-				//		}
-
-				//		try
-				//		{
-				//			fs::copy(assignmentCodeName + "/", assignmentHeader + "/Source/" + assignmentCodeName + "/", copyOptions);
-				//		}
-				//		catch (const std::exception&)
-				//{
-				//			std::cout << "Failed to copy code files\n";
-				//		}
-
-				//		std::cout << "Done\n";
-
-				//		system("pause");
+			if (!zipFailed)
+			{
+				Directory.Delete(assignmentHeader, true);
+			}
 		}
 	}
 }
