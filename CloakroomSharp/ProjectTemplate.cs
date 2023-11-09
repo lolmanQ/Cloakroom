@@ -8,6 +8,6 @@ namespace CloakroomSharp
 {
 	abstract class ProjectTemplate
 	{
-		public abstract bool Run(string aPath, string aAssignmentName);
+		public abstract bool Run(string aPath, string aAssignmentName, string aHandInVersion);
 	}
 }

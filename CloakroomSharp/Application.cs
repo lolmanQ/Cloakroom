@@ -9,7 +9,12 @@ namespace CloakroomSharp
 	{
 		public void Run()
 		{
+			string handInVersion;
+
 			string assignmentHeader;
+			Console.WriteLine("Version of hand in, leave empty for first handin:");
+			handInVersion = Console.ReadLine();
+
 			Console.WriteLine("Enter task:");
 			assignmentHeader = Console.ReadLine();
 
@@ -17,7 +22,7 @@ namespace CloakroomSharp
 
 			ProjectTemplate projectTemplate = new TemplateTGEPP();
 
-			bool result = projectTemplate.Run(".", assignmentHeader);
+			bool result = projectTemplate.Run(".", assignmentHeader, handInVersion);
 
 			Console.WriteLine("Press enter to continue");
 			Console.ReadLine();

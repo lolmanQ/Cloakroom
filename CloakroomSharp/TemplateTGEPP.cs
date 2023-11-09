@@ -42,9 +42,8 @@ namespace CloakroomSharp
 			return true;
 		}
 
-		public override bool Run(string aPath, string aAssignmentName)
+		public override bool Run(string aPath, string aAssignmentName, string aHandInVersion)
 		{
-			bool hasFailed = false;
 
 			string turnInFolderPath = aAssignmentName;
 			string turnInFolderExePath = turnInFolderPath + "/Exe";
@@ -109,6 +108,11 @@ namespace CloakroomSharp
 				{
 					File.Copy(newPath, newPath.Replace(projectEngineAssetsPath, turnInFolderExePath + "/EngineAssets"), false);
 				}
+
+				// Create assignment settings json
+				TGESettings settings = new TGESettings();
+				settings.window_settings.title = "TGEPP - " + aAssignmentName;
+				JsonFileUtils.SimpleWrite(settings, turnInFolderExePath + "/settings/EngineSettings.json");
 			}
 			catch (Exception e)
 			{
@@ -141,7 +145,14 @@ namespace CloakroomSharp
 
 			try
 			{
-				ZipFile.CreateFromDirectory(turnInFolderPath, turnInFolderPath + ".zip");
+				if (aHandInVersion != "")
+				{
+					ZipFile.CreateFromDirectory(turnInFolderPath, turnInFolderPath + " " + aHandInVersion + ".zip");
+				}
+				else
+				{
+					ZipFile.CreateFromDirectory(turnInFolderPath, turnInFolderPath + ".zip");
+				}
 			}
 			catch (Exception)
 			{
