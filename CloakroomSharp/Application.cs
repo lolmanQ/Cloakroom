@@ -20,7 +20,7 @@ namespace CloakroomSharp
 
 			assignmentHeader += " - Elias Böök";
 
-			ProjectTemplate projectTemplate = new TemplateTGEPP();
+			ProjectTemplate projectTemplate = new TemplateTGP();
 
 			bool result = projectTemplate.Run(".", assignmentHeader, handInVersion);
 
